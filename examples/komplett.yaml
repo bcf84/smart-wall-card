@@ -1,0 +1,195 @@
+# Smart Wall Card – großes Beispiel mit fast allen Möglichkeiten
+# Alle Entitäts-IDs sind Platzhalter. Was nicht gebraucht wird, einfach löschen –
+# fehlende Bereiche werden nicht angezeigt.
+
+views:
+  - title: Smart Wall
+    path: home
+    type: panel
+    cards:
+      - type: custom:smart-wall-card
+        name: Max
+        weather: weather.zuhause
+        calendars: [calendar.familie, calendar.geburtstage, calendar.muellabfuhr]
+        countdown_calendar: calendar.muellabfuhr
+        todo: todo.einkaufsliste
+
+        # ---------- Hintergrund ----------
+        room_image: /local/hintergrund.jpg
+        background_entity: input_select.hintergrund     # Optionen z. B.: Automatik, Strand, Berge
+        background_images:
+          Strand: /local/backgrounds/strand.jpg
+          Berge: /local/backgrounds/berge.jpg
+
+        # ---------- Szenen-Knöpfe auf der Startseite ----------
+        modes:
+          status: input_text.hausstatus
+          items:
+            - {key: kommen, name: Kommen, script: script.kommen, icon: mdi:home-import-outline}
+            - {key: gehen, name: Gehen, script: script.gehen, icon: mdi:home-export-outline}
+            - {key: schlafen, name: Schlafen, script: script.schlafen, icon: mdi:weather-night}
+        tea: timer.tee
+
+        # ---------- Licht & Steckdosen ----------
+        lights:
+          - room: Wohnzimmer
+            auto: input_boolean.lichtautomatik_wohnzimmer
+            entities:
+              - {entity: light.wohnzimmer, name: Alle}
+              - {entity: light.wohnzimmer_decke, name: Decke}
+              - {entity: light.stehlampe, name: Stehlampe}
+            plugs:
+              - {entity: switch.fernseher, name: TV}
+              - {entity: switch.ladegeraete, name: Ladegeräte}
+          - room: Schlafzimmer
+            entities:
+              - {entity: light.schlafzimmer, name: Alle}
+              - {entity: light.nachttisch, name: Nachttisch}
+
+        # ---------- Heizung & Luft ----------
+        climates:
+          - entity: climate.wohnzimmer
+            room: Wohnzimmer
+            temperature: sensor.wohnzimmer_temperatur
+            humidity: sensor.wohnzimmer_luftfeuchtigkeit
+          - entity: climate.schlafzimmer
+            room: Schlafzimmer
+        airquality:
+          - name: Schlafzimmer
+            icon: mdi:molecule-co2
+            value: sensor.schlafzimmer_co2
+            info:
+              - {e: sensor.schlafzimmer_temperatur, l: Temperatur}
+              - {e: sensor.schlafzimmer_luftfeuchtigkeit, l: Feuchte}
+
+        # ---------- Rollos & Fenster ----------
+        covers_all: cover.alle_rollos
+        covers:
+          - room: Wohnzimmer
+            entities:
+              - {entity: cover.wohnzimmer_links, name: Links}
+              - {entity: cover.wohnzimmer_rechts, name: Rechts}
+        windows:
+          - room: Wohnzimmer
+            entities:
+              - {entity: binary_sensor.wohnzimmer_fenster, name: Fenster}
+          - room: Schlafzimmer
+            entities:
+              - {entity: binary_sensor.schlafzimmer_fenster, name: Fenster}
+
+        # ---------- Haushalt ----------
+        appliances:
+          # einfaches Gerät mit Statuszeile, Infos und Knöpfen
+          - name: Waschmaschine
+            icon: mdi:washing-machine
+            status: sensor.waschmaschine_status
+            status_map: {running: Läuft, idle: Bereit, "off": Aus}
+            power: switch.waschmaschine
+            progress: sensor.waschmaschine_fortschritt
+            remaining: sensor.waschmaschine_restzeit
+            info:
+              - {e: sensor.waschmaschine_programm, l: Programm}
+            popup:                      # Detail-Popup mit beliebigen Werten
+              type: stats
+              run: binary_sensor.waschmaschine_laeuft
+              on_text: Läuft
+              off_text: Aus
+              rows:
+                - {e: sensor.waschmaschine_programm, l: Programm}
+                - {e: sensor.waschmaschine_energie_letzter_durchgang, l: Energie zuletzt, d: 2}
+
+          # Saugroboter mit Knöpfen
+          - name: Saugroboter
+            icon: mdi:robot-vacuum
+            status: vacuum.sauger
+            battery: sensor.sauger_akku
+            info:
+              - {e: binary_sensor.sauger_wassertank_leer, l: Wasser, map: "leer|OK", warn: ["on"]}
+            actions:
+              - {entity: vacuum.sauger, service: vacuum.start, icon: play, label: Start}
+              - {entity: vacuum.sauger, service: vacuum.return_to_base, icon: home-import-outline, label: Basis}
+
+          # Drucker mit Füllständen (Warnung unter 15 %)
+          - name: Drucker
+            icon: mdi:printer
+            status: sensor.drucker
+            status_map: {idle: Bereit, unavailable: Aus}
+            info:
+              - {e: sensor.drucker_schwarz, l: Schwarz, warn_below: 15}
+              - {e: sensor.drucker_farbe, l: Farbe, warn_below: 15}
+
+          # Sonderkachel: alle Akkus unter 10 %
+          - name: Batterien
+            batteries: 10
+
+        # ---------- Musik & TV ----------
+        music:
+          - {name: Wohnzimmer, entity: media_player.wohnzimmer}
+          - {name: Küche, entity: media_player.kueche}
+        stations:
+          - {name: Mein Radio, uri: library://radio/1, image: https://example.com/logo.png}
+        tv: [media_player.fernseher]
+        tv_extras: [light.tv_lightstrip]
+
+        # ---------- Sicherheit ----------
+        lock: lock.wohnungstuer
+        door_opener: script.tueroeffner
+        door_opener_name: Haustür
+        cameras:
+          - {e: camera.eingang, name: Eingang}
+        motion:
+          - {e: binary_sensor.flur_bewegung, name: Flur}
+
+        # ---------- Energie ----------
+        energy:
+          solar: sensor.solarleistung
+          house: sensor.hausverbrauch
+          grid: sensor.netzbezug_leistung
+          battery: sensor.speicher_ladestand
+          today_solar: sensor.solarertrag_heute
+          today_house: sensor.hausverbrauch_heute
+          today_grid: sensor.netzbezug_heute
+
+        # ---------- Umwelt ----------
+        pollen:
+          labels: [Birke, Gräser]
+          sensors: [sensor.pollenflug_birke, sensor.pollenflug_graeser]
+        traffic: {lat: 49.45, lon: 11.08, radius: 15, roads: [A9, A73]}
+
+        # ---------- Server ----------
+        servers:
+          - name: Home Assistant
+            icon: mdi:home-assistant
+            status: binary_sensor.ha_status
+            status_map: "online|offline"
+            value: sensor.ha_cpu
+            info:
+              - {e: sensor.ha_ram, l: RAM, warn_above: 90}
+              - {e: update.home_assistant_core_update, l: Core, map: "verfügbar|aktuell", warn: ["on"]}
+
+        # ---------- Homematic (optional, Integration „Homematic(IP) Local“) ----------
+        # homematic:
+        #   service: sensor.ccu_servicemeldungen
+        #   alarm: sensor.ccu_alarmmeldungen
+        #   entry_id: 01ABC...
+
+        # ---------- Post & Pakete ----------
+        # läuft automatisch mit der Integration bcf84/ha-dhl-de; abschalten mit:
+        # post: false
+
+        # ---------- Warnpunkte in der Menüleiste ----------
+        nav_alerts:
+          light: [{unavailable: ["@lights"]}]
+          plug: [{unavailable: ["@plugs"]}]
+          cover:
+            - unavailable: ["@covers"]
+            - dead: ["@windows"]
+          climate:
+            - dead: ["@climate_temps"]
+            - {battery: 10, battery_only: [heat]}
+          app:
+            - {e: vacuum.sauger, states: [error], label: Saugroboter}
+            - {battery: 10, battery_skip: [heat]}
+          server:
+            - on: [update.home_assistant_core_update]
+            - off: [binary_sensor.ha_status]

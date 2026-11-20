@@ -1,0 +1,56 @@
+# Smart Wall Card – kleines Beispiel
+# In den Raw-Konfigurationseditor eines neuen Dashboards kopieren
+# und alle Entitäts-IDs durch die eigenen ersetzen.
+
+views:
+  - title: Smart Wall
+    path: home
+    type: panel
+    cards:
+      - type: custom:smart-wall-card
+        name: Max
+        weather: weather.zuhause
+        room_image: /local/hintergrund.jpg     # Bild in /config/www/hintergrund.jpg
+        calendars:
+          - calendar.familie
+          - calendar.muellabfuhr
+        countdown_calendar: calendar.muellabfuhr
+        todo: todo.einkaufsliste
+
+        lights:
+          - room: Wohnzimmer
+            entities:
+              - {entity: light.wohnzimmer, name: Alle}
+              - {entity: light.wohnzimmer_decke, name: Decke}
+              - {entity: light.stehlampe, name: Stehlampe}
+            plugs:
+              - {entity: switch.fernseher, name: TV}
+          - room: Küche
+            entities:
+              - {entity: light.kueche, name: Licht}
+
+        climates:
+          - entity: climate.wohnzimmer
+            room: Wohnzimmer
+          - entity: climate.schlafzimmer
+            room: Schlafzimmer
+
+        covers:
+          - room: Wohnzimmer
+            entities:
+              - {entity: cover.wohnzimmer, name: Rollo}
+
+        windows:
+          - room: Wohnzimmer
+            entities:
+              - {entity: binary_sensor.wohnzimmer_fenster, name: Fenster}
+
+        appliances:
+          - name: Batterien
+            batteries: 10
+
+        nav_alerts:
+          light: [{unavailable: ["@lights"]}]
+          plug: [{unavailable: ["@plugs"]}]
+          cover: [{unavailable: ["@covers"]}, {dead: ["@windows"]}]
+          app: [{battery: 10}]
