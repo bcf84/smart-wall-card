@@ -195,6 +195,23 @@ Funktioniert automatisch, wenn die Integration [ha-dhl-de](https://github.com/bc
 installiert ist (Startseiten-Blase, Karte unter „Haushalt“, Briefbilder im Popup).
 Ohne die Integration bleibt der Bereich unsichtbar. Abschalten mit `post: false`.
 
+### Wetterwarnungen (DWD)
+
+Mit der Integration *Deutscher Wetterdienst (DWD) Wetterwarnungen* erscheint bei einer Warnung
+eine Blase in der Warnfarbe (gelb, orange, rot, violett) auf der Startseite. Ein Tipp öffnet alle
+Warnungen mit Zeitraum, Beschreibung und Handlungsempfehlungen. Ohne Warnung bleibt alles unsichtbar.
+
+Die Sensoren werden automatisch gefunden. Wer mehrere Regionen hat oder es abschalten will:
+
+```yaml
+weather_warnings:
+  current: sensor.meine_region_aktuelle_warnstufe
+  advance: sensor.meine_region_vorwarnstufe
+  min_level: 1        # optional: Vorabinformationen (Stufe 0) ausblenden
+# oder ganz aus:
+# weather_warnings: false
+```
+
 ### Homematic
 
 Mit der Integration *Homematic(IP) Local* (OpenCCU/CCU3) zeigt die Karte Service- und
