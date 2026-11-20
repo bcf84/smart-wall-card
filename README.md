@@ -158,6 +158,7 @@ Jedes Gerät ist eine Kachel. Die wichtigsten Felder:
 | `actions` | Knöpfe: `{button: button.x, icon: play, label: Start}` oder `{service: vacuum.start, entity: vacuum.x, …}`, optional `confirm` |
 | `popup` | großes Detail-Popup, `type`: `coffee`, `dishwasher`, `vacuum`, `airfryer`, `fridge` oder `stats` |
 | `batteries: 10` | Sonderkachel: listet alle Akkus unter 10 % |
+| `battery_icon` | Akku als kleines Symbol in der Kopfzeile (wie Bluetooth), Prozent beim Darüberfahren; `battery_warn` (Standard 15) färbt es orange |
 
 Die Popup-Typen sind auf bestimmte Integrationen zugeschnitten (Home Connect für Kaffeemaschine
 und Geschirrspüler, Roborock für den Sauger). Wer andere Geräte hat, nimmt am besten
