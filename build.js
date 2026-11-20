@@ -20,7 +20,7 @@ main = rep(main,
 // 3) Kurzschreibweisen in der Konfiguration
 main = rep(main, "setConfig(c){this._cfg=Object.assign(", "setConfig(c){c=swExpandCfg(c);this._cfg=Object.assign(");
 // 4) CSS verdichten
-main = main.replace(/const SW_CSS=`([\s\S]*?)`;/, (_, css) => 'const SW_CSS=`' + csso.minify(css).css.replace(/`/g, '\\`') + '`;');
+main = main.replace(/const SW_CSS=`([\s\S]*?)`;/, (_, css) => 'const SW_CSS=`' + csso.minify(css,{restructure:false}).css.replace(/`/g, '\\`') + '`;');
 
 const parts = [src('05-config.js'), main, src('20-popups.js'), src('25-temp.js'), src('30-car.js'), src('40-post.js'), src('50-groupdim.js'), src('60-perf.js')];
 let all = parts.join('\n;\n');
