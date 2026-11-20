@@ -419,7 +419,7 @@ hr.line{margin:20px 0 22px}
 .cl .btn{width:34px;height:34px}
 .air{letter-spacing:.08em;font-size:13px}
 }
-@media (min-width:701px) and (max-width:1400px) and (orientation:landscape){.bottom{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr);gap:24px}.bottom .bl{grid-column:1;grid-row:1;width:auto}.bmid{grid-column:2;grid-row:1}.bottom .br{grid-column:3;grid-row:1;width:auto}.bmid>*{width:140px}.bmid>.bmedia{width:100%}}
+@media (min-width:701px) and (max-width:1400px) and (orientation:landscape){.bottom{grid-template-columns:auto minmax(0,1fr) minmax(190px,24%);gap:20px}.bottom .bl{grid-column:1;grid-row:1;width:auto}.bottom .bl .ring{width:124px}.bmid{grid-column:2;grid-row:1;gap:18px 12px}.bottom .br{grid-column:3;grid-row:1;width:auto}.bmid>*{width:auto;flex:1 1 0;min-width:90px;max-width:150px}.bmid>.bmedia{width:100%;flex:1 1 100%;max-width:none}.bmid .label{letter-spacing:.2em}.bubble{padding:12px 6px 10px}.bubble .u{letter-spacing:.1em}.bubble .s{letter-spacing:.1em}.ring .w,.ring .u{letter-spacing:.15em}}
 @media (max-width:700px){
 .top .clock,.top .weather,.bottom .br{display:none}
 .bottom .bl{grid-column:1/-1;justify-content:center}
