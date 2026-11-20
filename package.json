@@ -1,0 +1,8 @@
+{
+  "name": "smart-wall-card",
+  "version": "3.0.0-beta.1",
+  "private": true,
+  "description": "Smart Wall Dashboard-Karte für Home Assistant",
+  "scripts": { "build": "node build.js", "test": "node test.js" },
+  "devDependencies": { "terser": "^5", "csso": "^5", "jsdom": "^24", "@fontsource/open-sans": "^5" }
+}
