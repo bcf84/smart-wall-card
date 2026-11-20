@@ -1,0 +1,22 @@
+# Legt bei jedem Upload einer neuen dist-Datei automatisch ein Release an.
+# Der Marketplace lädt dann jede Version über ihren eigenen Tag – ohne Zwischenspeicher-Verzögerung.
+name: Release
+on:
+  push:
+    branches: [main]
+    paths: [dist/smart-wall-card.js]
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Version lesen und Release anlegen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V=$(head -c 200 dist/smart-wall-card.js | grep -oE 'Smart Wall Card [0-9]+\.[0-9]+\.[0-9]+' | awk '{print $4}')
+          [ -n "$V" ] || { echo "keine Version gefunden"; exit 1; }
+          if gh release view "v$V" >/dev/null 2>&1; then echo "v$V existiert schon"; exit 0; fi
+          gh release create "v$V" dist/smart-wall-card.js dist/*.woff2 --title "$V" --notes "$(git log -1 --pretty=%s)" --target "$GITHUB_SHA"
