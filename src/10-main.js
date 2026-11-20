@@ -555,7 +555,7 @@ class SmartWallCard extends HTMLElement{
   _render(force){if(!this._hass||!this._cfg)return;if(!force&&Date.now()-(this._pd||0)<800){clearTimeout(this._rdT);this._rdT=setTimeout(()=>this._render(),800);return;}this._ensure();const sr=this.shadowRoot;
     if(this._drag&&this._drag.active)return;if(this._cdrag&&this._cdrag.active)return;if(!force&&this._page==='cover'&&this._coverLive())return;if(!force&&sr.activeElement&&['INPUT','SELECT'].includes(sr.activeElement.tagName))return;
     const p=this._page,meta=SW_PAGES.find(x=>x[0]===p);
-    const AL=this._alertPages();const nh=SW_PAGES.map(x=>`<button class="${x[0]===p?'active':''} ${AL[x[0]]?'warn':''} ${x[0]==='security'&&this._alarmHot()?'alarm':''}" title="${swEsc(x[2]+(AL[x[0]]?' – '+AL[x[0]].join(' · '):''))}" data-a="nav" data-p="${x[0]}"><ha-icon icon="${x[1]}"></ha-icon></button>`).join('')+this._modeBtns();const nv=sr.getElementById('swnav');if(nv._h!==nh){nv.innerHTML=nh;nv._h=nh;}
+    const AL=this._alertPages();const nh=SW_PAGES.map(x=>`<button class="${x[0]===p?'active':''} ${AL[x[0]]?'warn':''} ${x[0]==='security'&&this._alarmHot()?'alarm':''}" title="${swEsc(x[2]+(AL[x[0]]?' – '+AL[x[0]].join(' · '):''))}" data-a="nav" data-p="${x[0]}"><ha-icon icon="${x[1]}"></ha-icon></button>`).join('')+this._haCfgBtn()+this._modeBtns();const nv=sr.getElementById('swnav');if(nv._h!==nh){nv.innerHTML=nh;nv._h=nh;}
     sr.getElementById('swhero').classList.toggle('small',p!=='home');
     sr.getElementById('swtitle').textContent=p==='home'?swGreet(this._cfg.name):meta[2];this._renderHero();
     let body='';
@@ -638,6 +638,8 @@ class SmartWallCard extends HTMLElement{
     I.forEach(x=>{if(x.bat&&hasBat)return;let t=null;for(const id of x.ids){t=C.find(c=>c.s.has(id));if(t)break;}if(!t)for(const id of x.ids){const d=dv(id);t=d&&C.find(c=>c.d.has(d));if(t)break;}if(!t){rest.push(x.t);return;}(put.get(t.el)||put.set(t.el,[]).get(t.el)).push(x.t);});
     put.forEach((ts,el)=>{el.classList.add('awx');el.setAttribute('title',ts.join(' · '));if(el.matches('.app,.cl')){const d=document.createElement('div');d.className='chips awc';d.innerHTML=ts.map(t=>`<span class="ci warn">${swEsc(t)}</span>`).join('');el.appendChild(d);}else{const st=el.querySelector('.st,.i');if(st)st.textContent=ts[0];}});
     if(rest.length){const d=document.createElement('div');d.className='awarn';d.innerHTML=rest.map(t=>`<span class="ci warn">${swEsc(t)}</span>`).join('');ct.insertBefore(d,ct.firstChild);}}
+  _haCfgBtn(){const c=this._cfg;if(c.ha_settings===false)return '';const u=this._hass&&this._hass.user;if(u&&u.is_admin===false)return '';const path=typeof c.ha_settings==='string'?c.ha_settings:'/config/dashboard';
+    return `<button class="hacfg" title="Home Assistant – Einstellungen" data-a="hanav" data-u="${swEsc(path)}"><ha-icon icon="mdi:home-assistant"></ha-icon></button>`;}
   _modeBtns(){const M=this._cfg.modes;if(!M||!(M.items||[]).length)return '';const cs=M.status&&this._st(M.status);const cur=cs?cs.state:null;
     return '<div class="navsep"></div>'+M.items.map(m=>{const sc=this._st(m.script);const run=sc&&sc.state==='on';return `<button class="mode ${cur===m.key?'active':''} ${run?'run':''}" title="${swEsc(m.name||m.key)} – gedrückt halten" data-a="holdhint" data-hold="${m.script}"><ha-icon icon="${m.icon||(sc&&sc.attributes.icon)||'mdi:play'}"></ha-icon><span class="hl"></span></button>`;}).join('');}
   _homeBubbles(){const c=this._cfg;const test=c.alerts_test;let out='';

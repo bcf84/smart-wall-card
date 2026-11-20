@@ -77,6 +77,7 @@ nehmen entweder nur die ID (`light.flur`) oder ein Objekt mit Namen
 | `todo` | Einkaufsliste (`todo.…`) |
 | `start_page` | Seite beim Öffnen, z. B. `light` (Standard: Startseite) |
 | `height` | Höhe der Karte, z. B. `100vh` (Standard: Bildschirmhöhe minus HA-Kopfzeile) |
+| `ha_settings` | Knopf „Home Assistant“ unter „Einstellungen“ in der Menüleiste (nur für Admins). Standard: führt zu den HA-Einstellungen. Anderes Ziel: `ha_settings: /config/integrations`, ausblenden: `ha_settings: false` |
 
 ### Hintergrundbild
 
