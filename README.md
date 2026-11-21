@@ -261,6 +261,10 @@ compact_lights: false
 - **Drucker** (`appliances`, `popup: {type: printer, rows: [{e, l, u}]}`): Tintenstände, Zähler.
 - **Waage** (`appliances`, `popup: {type: scale, weight, last, person, days, rows: [{e, l}]}`): Gewichtsverlauf aus der Statistik.
 
+- **Heizung** (`climates`): Tipp auf Raumname oder Ist-Temperatur zeigt Ist/Soll mit −/+, Modus und Presets,
+  24-h-Verlauf Ist/Soll, Wochenplan (aus `schedule_data`), Feuchte, Fenster und Batterien des Raums.
+  `heat_popup: false` schaltet es ab.
+
 `more_popups: false` schaltet Raumluft-, Server- und Wetter-Popups ab.
 
 ### Einklappbare Einstellungen
