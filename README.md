@@ -233,6 +233,12 @@ xmas:
   automation_entity: input_boolean.weihnachtsbeleuchtung   # optional
   names:
     light.arbeitsplatte_fenster: Lichterkette Schlafzimmer
+  times:                                    # optional: Uhrzeiten mit −/+ (15 min) in den Einstellungen
+    - entity: input_datetime.weihnachten_aussen_morgens_an
+      name: Balkon morgens an
+  numbers:                                  # optional: Zahlen mit −/+ (Schritt des Helfers)
+    - entity: input_number.weihnachten_vorlauf_sonnenuntergang
+      name: Abends an vor Sonnenuntergang
   rooms:                                    # optional: Stecker zu Weihnachten in anderem Raum zeigen
     light.hue_smart_plug_1_2: Wohnzimmer
 ```
