@@ -222,6 +222,21 @@ weather_warnings:
 # weather_warnings: false
 ```
 
+### Weihnachten
+
+Solange `names_entity` an ist, zeigen die genannten Steckdosen und Lichter ihren Weihnachtsnamen.
+Unter Einstellungen gibt es dann den Abschnitt „Weihnachten“ mit beiden Schaltern.
+
+```yaml
+xmas:
+  names_entity: input_boolean.weihnachtsnamen
+  automation_entity: input_boolean.weihnachtsbeleuchtung   # optional
+  names:
+    light.arbeitsplatte_fenster: Lichterkette Schlafzimmer
+  rooms:                                    # optional: Stecker zu Weihnachten in anderem Raum zeigen
+    light.hue_smart_plug_1_2: Wohnzimmer
+```
+
 ### Einklappbare Einstellungen
 
 Auf der Einstellungsseite klappt jeder Abschnitt per Tipp auf die Überschrift auf und zu. Anfangs sind alle
