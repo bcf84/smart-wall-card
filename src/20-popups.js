@@ -7,8 +7,8 @@ const CSS=`
 .vtop ha-icon{--mdc-icon-size:36px;flex:none}
 .vtop .vs{font-size:13px;font-style:italic;opacity:.85}
 .vtop .vb{margin-left:auto;font-size:24px;font-weight:300;white-space:nowrap}
-.vmapw{margin:12px 0 4px;background:rgba(0,0,0,.18);min-height:120px}
-.vmap{display:block;width:100%;max-height:min(48vh,520px);object-fit:contain;cursor:pointer}
+.vmapw{margin:10px 0 2px;min-height:80px}
+.vmap{display:block;width:100%;max-height:340px;object-fit:contain;cursor:pointer;border-radius:4px}
 .vsec{margin-top:16px}
 .vsec>.sub{margin:0 0 8px}
 .vchips{display:flex;flex-wrap:wrap;gap:6px}
@@ -384,7 +384,7 @@ const ext={
     const ss=st(P.status);const vst=ss?(T[ss.state]||ss.state):(v?(T[v.state]||v.state):'');const bs=st(P.battery);const bat=bs&&!isNaN(parseFloat(bs.state))?Math.round(parseFloat(bs.state))+' %':'';const rs=st(P.room);
     let h=`<div class="vtop"><ha-icon icon="${P.icon||'mdi:robot-vacuum'}"></ha-icon><div style="min-width:0"><div class="vs">${esc([vst,rs&&!['unknown','unavailable'].includes(rs.state)?rs.state:''].filter(Boolean).join(' · '))}</div></div><div class="vb">${bat}</div></div>`;
     // Karte
-    let mh='';const ms=st(P.map);if(ms&&ms.attributes.entity_picture){const ep=ms.attributes.entity_picture;const u=ep+(ep.includes('?')?'&':'?')+'t='+encodeURIComponent(ms.last_updated);const MC=this._vmapC;const ok=MC&&MC.u===u;mh=`<div class="vmapw"><img class="vmap" data-a="vacmap" alt="Karte" src="${esc(ok?MC.d:u)}"${ok?'':` data-rot="${esc(String(P.map_rotate??'auto'))}" style="visibility:hidden"`}></div>`;}
+    const ms=st(P.map);if(ms&&ms.attributes.entity_picture){const ep=ms.attributes.entity_picture;const u=ep+(ep.includes('?')?'&':'?')+'t='+encodeURIComponent(ms.last_updated);const MC=this._vmapC;const ok=MC&&MC.u===u;h+=`<div class="vmapw"><img class="vmap" data-a="vacmap" alt="Karte" src="${esc(ok?MC.d:u)}"${ok?'':` data-rot="${esc(String(P.map_rotate??'auto'))}" style="visibility:hidden"`}></div>`;}
     // Steuerung
     const b=(svc,ic,l)=>`<button class="tbtn" data-a="svc" data-d="vacuum" data-s="${svc}" data-e="${P.entity}"><ha-icon icon="mdi:${ic}"></ha-icon>${l}</button>`;
     h+=sec('Steuerung',`<div class="vchips">${b('start','play','Start')}${b('pause','pause','Pause')}${b('stop','stop','Stopp')}${b('return_to_base','home-import-outline','Basis')}${b('clean_spot','target','Spot')}${b('locate','map-marker-radius','Orten')}${(P.buttons||[]).map(x=>`<button class="tbtn" data-a="press" data-e="${x.button}"${x.confirm?` data-c="${esc(x.confirm)}"`:''}><ha-icon icon="mdi:${x.icon||'gesture-tap'}"></ha-icon>${esc(x.label)}</button>`).join('')}</div>`);
@@ -424,13 +424,12 @@ const ext={
     const vo=st(P.volume);if(vo){const cv=Math.round(parseFloat(vo.state));const mk=x=>esc(JSON.stringify({value:Math.max(0,Math.min(100,(isNaN(cv)?50:cv)+x))}));es+=`<div class="li"><ha-icon icon="mdi:volume-high"></ha-icon><div class="grow"><div class="h">Lautstärke</div><div class="i">${isNaN(cv)?'–':cv+' %'}</div></div><button class="btn" data-a="svc" data-d="number" data-s="set_value" data-e="${P.volume}" data-x="${mk(-10)}"><ha-icon icon="mdi:minus"></ha-icon></button><button class="btn" data-a="svc" data-d="number" data-s="set_value" data-e="${P.volume}" data-x="${mk(10)}"><ha-icon icon="mdi:plus"></ha-icon></button></div>`;}
     const cl=st(P.child_lock);if(cl)es+=`<div class="li"><ha-icon icon="mdi:lock-outline"></ha-icon><div class="grow"><div class="h">Kindersicherung</div></div><button class="tbtn ${cl.state==='on'?'sel':''}" data-a="toggle" data-e="${P.child_lock}">${cl.state==='on'?'An':'Aus'}</button></div>`;
     h+=this._cs('set','Einstellungen',[dn?'Nicht stören '+(dn.state==='on'?'an':'aus'):'',vo?'Lautstärke '+Math.round(parseFloat(vo.state))+' %':''].filter(Boolean).join(' · '),es?`<div class="vset">${es}</div>`:'');
-    h=`${mh}<div class="dwcols"><div class="dwcol">${hl}</div><div class="dwcol" style="margin-top:16px">${h}</div></div>`;
+    h=`<div class="dwcols"><div class="dwcol">${hl}</div><div class="dwcol" style="margin-top:16px">${h}</div></div>`;
     const old=p.querySelector('.pbody');const sc=old?old.scrollTop:0;
     p.innerHTML=`<div class="panel wide dwx"><div class="pt">${esc(P.name||'Saugroboter')}</div><div class="pbody">${h}</div><button class="pclose" data-a="popclose">SCHLIESSEN</button></div>`;
     const nb=p.querySelector('.pbody');if(nb&&!first)nb.scrollTop=sc;p.classList.add('open');
     const im=p.querySelector('img.vmap[data-rot]');if(im){const u=im.getAttribute('src');const show=d=>{this._vmapC={u,d};im.removeAttribute('data-rot');if(d!==u)im.src=d;im.style.visibility='';};
-      im.onerror=()=>{im.style.visibility='';};im.onload=()=>{if(!im.hasAttribute('data-rot'))return;const W=im.naturalWidth,H=im.naturalHeight;const r=im.dataset.rot;const deg=r==='auto'?(H>W?90:0):((Number(r)||0)%360+360)%360;
-        if(!deg||!W||!H)return show(u);try{const cv=document.createElement('canvas');const sw=deg%180!==0;cv.width=sw?H:W;cv.height=sw?W:H;const x=cv.getContext('2d');x.translate(cv.width/2,cv.height/2);x.rotate(deg*Math.PI/180);x.drawImage(im,-W/2,-H/2);show(cv.toDataURL('image/png'));}catch(e){show(u);}};}}
+      im.onerror=()=>{im.style.visibility='';};im.onload=()=>{if(!im.hasAttribute('data-rot'))return;const W=im.naturalWidth,H=im.naturalHeight;if(!W||!H)return show(u);try{let sx=0,sy=0,sw=W,sh=H;if(P.map_trim!==false){const c0=document.createElement('canvas');c0.width=W;c0.height=H;const g=c0.getContext('2d');g.drawImage(im,0,0);const D=g.getImageData(0,0,W,H).data;const b=[D[0],D[1],D[2]];const bg=i=>Math.abs(D[i]-b[0])+Math.abs(D[i+1]-b[1])+Math.abs(D[i+2]-b[2])<30||D[i+3]<20;let x0=W,y0=H,x1=-1,y1=-1;for(let y=0;y<H;y++)for(let x=0;x<W;x++){if(!bg((y*W+x)*4)){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;}}if(x1>x0&&y1>y0){const m=Math.round(Math.max(x1-x0,y1-y0)*.03)+4;sx=Math.max(0,x0-m);sy=Math.max(0,y0-m);sw=Math.min(W,x1+m+1)-sx;sh=Math.min(H,y1+m+1)-sy;}}const r=im.dataset.rot;const deg=r==='auto'?(sh>sw?90:0):((Number(r)||0)%360+360)%360;if(!deg&&sw===W&&sh===H)return show(u);const cv=document.createElement('canvas');const q=deg%180!==0;cv.width=q?sh:sw;cv.height=q?sw:sh;const x=cv.getContext('2d');x.translate(cv.width/2,cv.height/2);x.rotate(deg*Math.PI/180);x.drawImage(im,sx,sy,sw,sh,-sw/2,-sh/2,sw,sh);show(cv.toDataURL('image/png'));}catch(e){show(u);}};}}
 };
 customElements.whenDefined('smart-wall-card').then(()=>{const C=customElements.get('smart-wall-card');Object.assign(C.prototype,ext);});
 })();

@@ -162,9 +162,9 @@ Jedes Gerät ist eine Kachel. Die wichtigsten Felder:
 | `batteries: 10` | Sonderkachel: listet alle Akkus unter 10 % |
 | `battery_icon` | Akku als kleines Symbol in der Kopfzeile (wie Bluetooth), Prozent beim Darüberfahren; `battery_warn` (Standard 15) färbt es orange |
 
-Beim Sauger (`type: vacuum`) steht die Karte über die volle Breite; ein hochkant geliefertes Bild
-wird automatisch quer gedreht. Mit `map_rotate: 0`, `90`, `-90` oder `180` im `popup` lässt sich
-die Drehung fest einstellen.
+Beim Sauger (`type: vacuum`) wird der leere Rand um die Karte abgeschnitten und ein hochkant
+liegendes Bild quer gedreht. Im `popup` einstellbar: `map_rotate: 0`, `90`, `-90` oder `180`
+(feste Drehung) und `map_trim: false` (Rand nicht abschneiden).
 
 Die Popup-Typen sind auf bestimmte Integrationen zugeschnitten (Home Connect für Kaffeemaschine
 und Geschirrspüler, Roborock für den Sauger). Wer andere Geräte hat, nimmt am besten
