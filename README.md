@@ -157,6 +157,8 @@ Jedes Gerät ist eine Kachel. Die wichtigsten Felder:
 | `info` | Zusatzzeilen: `{e: entität, l: Beschriftung, map: …, warn: [zustände], warn_below: 15, warn_above: 90, u: Einheit}` |
 | `actions` | Knöpfe: `{button: button.x, icon: play, label: Start}` oder `{service: vacuum.start, entity: vacuum.x, …}`, optional `confirm` |
 | `popup` | großes Detail-Popup, `type`: `coffee`, `dishwasher`, `vacuum`, `airfryer`, `fridge` oder `stats` |
+| `pop` | anderes Popup beim Tipp auf die Überschrift, z. B. `car0` für das erste Auto (siehe „Auto“) |
+| `more` | Entität, deren Detailansicht ein Tipp auf die Überschrift öffnet (wenn es kein Popup gibt) |
 | `batteries: 10` | Sonderkachel: listet alle Akkus unter 10 % |
 | `battery_icon` | Akku als kleines Symbol in der Kopfzeile (wie Bluetooth), Prozent beim Darüberfahren; `battery_warn` (Standard 15) färbt es orange |
 
@@ -224,6 +226,42 @@ homematic:
   service: sensor.ccu_servicemeldungen
   alarm: sensor.ccu_alarmmeldungen
   entry_id: 01ABC…   # Einstellungen → Geräte & Dienste → Homematic → ⋮ → Info (für „Bestätigen“)
+```
+
+### Auto
+
+Für Autos mit Tür-, Fenster- und Schloss-Sensoren (z. B. *Audi connect*). Steht das Auto zu Hause
+und ist etwas offen, erscheint auf der Startseite eine orange Blase. Ein Tipp öffnet ein Popup mit
+dem Auto von oben: Offene Türen klappen auf, offene Fenster, Schiebedach, Kofferraum und Motorhaube
+werden orange. Daneben stehen Liste, Tank und Reichweite, „Bestätigen“ blendet eine Meldung aus,
+bis das Teil wieder zu ist (dafür je ein `input_boolean` und eine Automation, die ihn beim
+Schließen ausschaltet). Dasselbe Popup öffnet sich auf der Haushalt-Seite mit `pop: car0`.
+
+```yaml
+car_alerts:
+  - name: Auto
+    tracker: device_tracker.auto_position      # Blase nur, wenn dieser Tracker „home“ ist
+    last_update: sensor.auto_last_update
+    lock: lock.auto_tuerschloss
+    tank: sensor.auto_tankfuellstand
+    range: sensor.auto_reichweite
+    refresh: button.auto_daten_aktualisieren   # Knopf „Aktualisieren“ (mit Rückfrage)
+    parts:                                      # für das Bild
+      doors:   {lf: binary_sensor.auto_tuer_vl, rf: …, lr: …, rr: …}
+      windows: {lf: binary_sensor.auto_fenster_vl, rf: …, lr: …, rr: …}
+      sunroof: binary_sensor.auto_schiebedach
+      trunk: binary_sensor.auto_kofferraum
+      hood: binary_sensor.auto_motorhaube
+    extra:                                      # nur anzeigen, ohne Startseiten-Meldung
+      - {e: binary_sensor.auto_motorhaube, l: Motorhaube}
+    items:                                      # melden und bestätigen
+      - e: binary_sensor.auto_fenster
+        l: Fenster
+        ack: input_boolean.auto_quittiert_fenster
+        detail: [{e: binary_sensor.auto_fenster_vl, l: vorne links}, …]
+      - {e: binary_sensor.auto_schiebedach, l: Schiebedach, ack: input_boolean.auto_quittiert_schiebedach}
+appliances:
+  - {name: Auto, icon: mdi:car-side, status: lock.auto_tuerschloss, pop: car0, info: […]}
 ```
 
 ### Warnpunkte in der Menüleiste (`nav_alerts`)
