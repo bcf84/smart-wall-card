@@ -19,7 +19,7 @@ C.prototype._relevant=function(){const ids=orl.call(this);const X=this._cfg.xmas
 const ops=C.prototype._pSettings;
 C.prototype._pSettings=function(){let h=ops.call(this);const X=this._cfg.xmas;if(!X)return h;
   const tile=(id,ic,lab,onTxt,offTxt,confOff)=>{const s=id&&this._st(id);if(!s)return '';const on=s.state==='on';
-    return `<div class="tile ${on?'on':''}" data-a="svc" data-d="input_boolean" data-s="${on?'turn_off':'turn_on'}" data-e="${esc(id)}"${on&&confOff?` data-c="${esc(confOff)}"`:''}><ha-icon icon="mdi:${ic}"></ha-icon><div style="min-width:0"><div class="n">${esc(lab)}</div><div class="st">${on?onTxt:offTxt}</div></div></div>`;};
+    return `<div class="tile ${on?'on':''}" style="height:auto;min-height:64px;grid-column:span 2" data-a="svc" data-d="input_boolean" data-s="${on?'turn_off':'turn_on'}" data-e="${esc(id)}"${on&&confOff?` data-c="${esc(confOff)}"`:''}><ha-icon icon="mdi:${ic}"></ha-icon><div style="min-width:0"><div class="n" style="overflow-wrap:anywhere">${esc(lab)}</div><div class="st">${on?onTxt:offTxt}</div></div></div>`;};
   const t=tile(X.automation_entity,'pine-tree','Weihnachtsbeleuchtung','Automatik an','Aus','Weihnachtsbeleuchtung beenden? Alle Weihnachts-Steckdosen werden ausgeschaltet.')+tile(X.names_entity,'string-lights','Weihnachtsnamen','Lichterketten-Namen','Normale Namen');
   /* Uhrzeit (input_datetime) mit −/+ in 15-Minuten-Schritten: xmas.times: [{entity, name}] */
   const tm=(X.times||[]).map(o=>{const s=o&&o.entity&&this._st(o.entity);if(!s)return '';const [hh,mm]=String(s.state).split(':').map(Number);if(isNaN(hh)||isNaN(mm))return '';
