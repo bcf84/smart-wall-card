@@ -243,6 +243,15 @@ xmas:
     light.hue_smart_plug_1_2: Wohnzimmer
 ```
 
+### Kompakte Licht- und Steckdosen-Seite
+
+Raumname links, Kacheln in einer Zeile daneben, flachere Kacheln – damit möglichst alle Räume ohne Scrollen
+passen. Auf schmalen Bildschirmen bleibt es untereinander. Altes Layout:
+
+```yaml
+compact_lights: false
+```
+
 ### Einklappbare Einstellungen
 
 Auf der Einstellungsseite klappt jeder Abschnitt per Tipp auf die Überschrift auf und zu. Anfangs sind alle
