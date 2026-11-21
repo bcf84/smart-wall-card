@@ -222,6 +222,15 @@ weather_warnings:
 # weather_warnings: false
 ```
 
+### Einklappbare Einstellungen
+
+Auf der Einstellungsseite klappt jeder Abschnitt per Tipp auf die Überschrift auf und zu. Anfangs sind alle
+zugeklappt; welche offen sind, merkt sich jedes Gerät selbst. Wer alles offen haben will:
+
+```yaml
+settings_collapsible: false
+```
+
 ### Homematic
 
 Mit der Integration *Homematic(IP) Local* (OpenCCU/CCU3) zeigt die Karte Service- und
