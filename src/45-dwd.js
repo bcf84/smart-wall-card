@@ -12,6 +12,8 @@ const hm=ts=>{const d=new Date(ts);if(isNaN(d))return '';const s=d.toLocaleTimeS
 
 /* Konfiguration: weather_warnings: {current, advance, name} · false = aus · ohne Angabe: DWD-Sensoren automatisch finden */
 C.prototype._dwdCfg=function(){const W=this._cfg.weather_warnings;if(W===false||!this._hass)return null;const w=Object.assign({name:'Wetter',min_level:0},W||{});
+  /* min_level darf auch ein Helfer sein (z. B. input_number.wetterwarnung_ab_stufe), dann gilt dessen Wert */
+  if(typeof w.min_level==='string'){w.min_entity=w.min_level;const ms=this._hass.states[w.min_level];const mv=ms?parseFloat(ms.state):NaN;w.min_level=isNaN(mv)?0:mv;}
   if(!w.current&&!w.advance){const st=this._hass.states;const n=Object.keys(st).length;
     if(!this._dwdAuto||this._dwdAuto.n!==n){const ids=Object.keys(st).filter(id=>id.startsWith('sensor.')&&st[id].attributes&&/DWD/.test(String(st[id].attributes.attribution||''))&&'warning_count' in st[id].attributes);
       this._dwdAuto={n,cur:ids.find(id=>!/vorwarn|advance/i.test(id))||null,adv:ids.find(id=>/vorwarn|advance/i.test(id))||null};}
@@ -28,7 +30,14 @@ C.prototype._dwdData=function(){const w=this._dwdCfg();if(!w)return [];const now
 
 /* Neu zeichnen, wenn sich die Warnlage ändert */
 const orl=C.prototype._relevant;
-C.prototype._relevant=function(){const ids=orl.call(this);const w=this._dwdCfg();if(w)ids.push(w.current,w.advance);return ids.filter(Boolean);};
+C.prototype._relevant=function(){const ids=orl.call(this);const w=this._dwdCfg();if(w)ids.push(w.current,w.advance,w.min_entity);return ids.filter(Boolean);};
+
+/* Einstellungen: Wetterwarnungen ab Stufe (nur wenn min_level ein Helfer ist) */
+const ops=C.prototype._pSettings;
+C.prototype._pSettings=function(){let h=ops.call(this);const w=this._dwdCfg();const ms=w&&w.min_entity&&this._st(w.min_entity);if(!ms)return h;if(/Keine Einstellungen konfiguriert/.test(h))h='';
+  const cur=Math.round(parseFloat(ms.state));const L=[[1,'Alle','Wetterwarnung'],[2,'Markant','ab Orange'],[3,'Unwetter','ab Rot'],[4,'Extrem','nur Violett']];
+  h+=`<div class="sect"><div class="label">Wetterwarnungen</div><div class="muted" style="margin-bottom:10px">Auf der Startseite erscheinen nur DWD-Warnungen ab dieser Stufe</div><div class="grid">${L.map(([n,lab,sub])=>`<div class="tile ${cur===n?'on':''}" data-a="svc" data-d="input_number" data-s="set_value" data-e="${esc(ms.entity_id)}" data-x="${esc(JSON.stringify({value:n}))}"><ha-icon icon="mdi:alert-circle" style="color:${COL[n]};opacity:1"></ha-icon><div style="min-width:0"><div class="n">${n} · ${lab}</div><div class="st">${cur===n?'Aktiv':sub}</div></div></div>`).join('')}</div></div>`;
+  return h;};
 
 /* Blase auf der Startseite (nur bei Warnung) */
 const ohb=C.prototype._homeBubbles;

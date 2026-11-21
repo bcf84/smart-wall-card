@@ -215,7 +215,9 @@ Die Sensoren werden automatisch gefunden. Wer mehrere Regionen hat oder es absch
 weather_warnings:
   current: sensor.meine_region_aktuelle_warnstufe
   advance: sensor.meine_region_vorwarnstufe
-  min_level: 1        # optional: Vorabinformationen (Stufe 0) ausblenden
+  min_level: 1        # optional: nur Warnungen ab dieser Stufe zeigen (0–4)
+                      # oder ein Helfer: min_level: input_number.wetterwarnung_ab_stufe
+                      # dann gibt es unter Einstellungen Knöpfe für Stufe 1–4
 # oder ganz aus:
 # weather_warnings: false
 ```
