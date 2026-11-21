@@ -252,6 +252,17 @@ Scrollen passen. Originalmaße:
 compact_lights: false
 ```
 
+### Weitere Popups
+
+- **Raumluft** (`airquality`): Tipp auf die Überschrift zeigt Bewertung, Steuerung (Ein/Aus, Modi), 24-h-Verlauf und Werte.
+  Optional `popup: {graphs: [...], rows: [...]}`.
+- **Server** (`servers`): CPU, RAM-Verlauf 24 h, Details und Aktionen.
+- **Wetter** (Startseite): Stunden- und 7-Tage-Vorhersage.
+- **Drucker** (`appliances`, `popup: {type: printer, rows: [{e, l, u}]}`): Tintenstände, Zähler.
+- **Waage** (`appliances`, `popup: {type: scale, weight, last, person, days, rows: [{e, l}]}`): Gewichtsverlauf aus der Statistik.
+
+`more_popups: false` schaltet Raumluft-, Server- und Wetter-Popups ab.
+
 ### Einklappbare Einstellungen
 
 Auf der Einstellungsseite klappt jeder Abschnitt per Tipp auf die Überschrift auf und zu. Anfangs sind alle
