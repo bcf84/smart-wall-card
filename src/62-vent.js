@@ -14,7 +14,7 @@ C.prototype._vtOut=function(V){const w=this._st(V.weather||this._cfg.weather);le
 /* Bewertung aller Räume aus climates (+ windows) */
 C.prototype._vtRooms=function(){const V=this._vtCfg();if(!V)return [];const out=this._vtOut(V);const now=Date.now();const G=this._grp?this._grp(this._cfg.climates):(this._cfg.climates||[]);const W=this._grp?this._grp(this._cfg.windows):(this._cfg.windows||[]);
   const co2m={};Object.entries(V.co2||{}).forEach(([k,v])=>co2m[String(k).toLowerCase()]=v);const bath=(V.bath||[]).map(x=>String(x).toLowerCase());
-  return G.map(g=>{const eid=g.entity||(g.entities&&this._eid(g.entities[0]));const s=eid&&this._st(eid);if(!g.room||!s)return null;const A=s.attributes||{};
+  const seen=new Set();return G.map(g=>{const eid=g.entity||(g.entities&&this._eid(g.entities[0]));const s=eid&&this._st(eid);if(!g.room||!s)return null;const rk=String(g.room).toLowerCase();if(seen.has(rk))return null;seen.add(rk);const A=s.attributes||{};
     let t=this._vtNum(g.temperature);if(isNaN(t))t=parseFloat(A.current_temperature);let rh=this._vtNum(g.humidity);if(isNaN(rh))rh=parseFloat(A.current_humidity);
     const room=String(g.room);const rl=room.toLowerCase();const dpi=dew(t,rh);const co2id=co2m[rl];const co2=this._vtNum(co2id);
     const thr=bath.includes(rl)?V.humidity_bath:V.humidity;
