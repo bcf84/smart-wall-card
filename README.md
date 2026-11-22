@@ -341,6 +341,8 @@ city_traffic:
   title: Stau
 ```
 
+Im Popup lässt sich jede Meldung mit „Ausblenden“ dauerhaft (pro Tablet) ausblenden; „wieder zeigen“ holt alle zurück. Sperrungen, die die Karte länger als `acute_days` Tage durchgehend sieht, gelten als Dauersperrung und werden ausgeblendet.
+
 ### Einklappbare Einstellungen
 
 Auf der Einstellungsseite klappt jeder Abschnitt per Tipp auf die Überschrift auf und zu. Anfangs sind alle

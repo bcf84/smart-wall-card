@@ -5,9 +5,12 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 /* TomTom iconCategory */
 const CAT={1:['Unfall','car-emergency',3],2:['Nebel','weather-fog',0],3:['Gefahr','alert-outline',2],4:['Regen','weather-pouring',0],5:['Glätte','snowflake-alert',2],6:['Stau','car-multiple',1],7:['Fahrstreifen gesperrt','road-variant',1],8:['Straße gesperrt','sign-direction-remove',3],9:['Baustelle','cone',1],10:['Wind','weather-windy',0],11:['Überflutung','home-flood',3],14:['Pannenfahrzeug','car-wrench',1]};
 const MAG={1:'leicht',2:'mittel',3:'stark'};
+const dt=t=>{const d=new Date(t);return isNaN(d)?'–':d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});};
 const hm=t=>{const d=new Date(t);return isNaN(d)?'':d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});};
 const until=t=>{const d=new Date(t);if(isNaN(d))return '';const n=new Date();const sameDay=d.toDateString()===n.toDateString();const tm=new Date(n);tm.setDate(n.getDate()+1);
   if(sameDay)return 'bis '+hm(d);if(d.toDateString()===tm.toDateString())return 'bis morgen '+hm(d);if(d-n>60*864e5)return '';return 'bis '+d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'});};
+const LS=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v;}catch(e){return d;}};const SS=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
+const sig=i=>[i.cat,(i.roads||[]).join('/'),i.from||'',i.to||''].join('|');
 C.prototype._ctCfg=function(){const T=this._cfg.city_traffic;if(!T||!T.key)return null;const h=this._hass&&this._hass.states&&this._hass.states['zone.home'];const A=h?h.attributes:{};
   return Object.assign({radius:8,min_jam:2,min_delay:3,acute_days:2,title:'Stau',interval:300,lat:A.latitude,lon:A.longitude,skip_roads:(this._cfg.traffic&&this._cfg.traffic.roads)||[]},T);};
 C.prototype._ctLoad=function(){const T=this._ctCfg();if(!T||T.lat==null)return;const now=Date.now();const c=this._ct2;if(c&&(c.busy||now-c.t<T.interval*1000))return;
@@ -24,9 +27,13 @@ C.prototype._ctLoad=function(){const T=this._ctCfg();if(!T||T.lat==null)return;c
         if(i.cat===1)return true;
         if(i.cat===8){if(i.txt.some(t=>/bau|baustelle|bauarbeit|sanierung|erneuerung/i.test(t)))return false;const st=i.start?new Date(i.start).getTime():NaN,en=i.end?new Date(i.end).getTime():NaN;if(!isNaN(en))return en-now<=T.acute_days*D;return !isNaN(st)&&now-st<=T.acute_days*D;}
         return false;})
-      .map(i=>Object.assign(i,{score:i.sev*1000+(i.mag===4?3:i.mag)*100+Math.min(99,Math.round(i.delay/60))}))
+      .map(i=>Object.assign(i,{sig:sig(i),score:i.sev*1000+(i.mag===4?3:i.mag)*100+Math.min(99,Math.round(i.delay/60))}))
       .sort((a,b)=>b.score-a.score);
-    this._ct2={t:Date.now(),items,busy:false,err:null};this._render(true);this._ctRefresh();})
+    const now2=Date.now(),D=864e5;const seen=LS('sw-ct-seen',{});const hid=LS('sw-ct-hidden',[]);
+    items.forEach(i=>{const e=seen[i.sig];if(!e||now2-e.l>D)seen[i.sig]={f:now2,l:now2};else e.l=now2;i.seenSince=seen[i.sig].f;});
+    Object.keys(seen).forEach(k=>{if(now2-seen[k].l>7*D)delete seen[k];});SS('sw-ct-seen',seen);
+    const vis=items.filter(i=>!hid.includes(i.sig)&&!(i.cat===8&&now2-i.seenSince>T.acute_days*D));
+    this._ct2={t:Date.now(),items:vis,all:items,busy:false,err:null};this._render(true);this._ctRefresh();})
   .catch(e=>{this._ct2=Object.assign(this._ct2||{},{busy:false,err:String(e&&e.message||e)});});};
 C.prototype._ctItems=function(){return (this._ct2&&this._ct2.items)||[];};
 /* Startseite: Blase nur bei Meldungen */
@@ -39,14 +46,21 @@ C.prototype._homeBubbles=function(){let out=ohb.call(this);const T=this._ctCfg()
   return out+this._bub(L.length,unit,{cap:T.title,txt:sub.toUpperCase()},L.length?(hard?'#F44336':'#FF9800'):null,'pop:ctraffic');};
 /* Popup */
 C.prototype._ctBody=function(){const T=this._ctCfg();const L=this._ctItems();
-  if(!L.length)return `<div class="muted">${this._ct2&&this._ct2.err?'Meldungen konnten nicht geladen werden ('+esc(this._ct2.err)+').':'Derzeit keine akuten Staus oder Sperrungen im Umkreis von '+(T?T.radius:8)+' km.'}</div>`;
+  if(!L.length){const nh=LS('sw-ct-hidden',[]).length;return `<div class="muted">${this._ct2&&this._ct2.err?'Meldungen konnten nicht geladen werden ('+esc(this._ct2.err)+').':'Derzeit keine akuten Staus oder Sperrungen im Umkreis von '+(T?T.radius:8)+' km.'}</div>`+(nh?`<div class="pmut">${nh} ausgeblendet · <span data-a="ctunhide" style="cursor:pointer;text-decoration:underline">wieder zeigen</span></div>`:'');}
   let h=L.map(i=>{const col=(i.cat===8||i.cat===1||i.mag>=3)?'#F44336':'#FF9800';const road=i.roads.join(', ');
     const where=[i.from,i.to].filter(Boolean);const meta=[i.delay>=60?'+'+Math.round(i.delay/60)+' min':'',i.mag&&i.mag<4&&i.cat===6?MAG[i.mag]:'',i.len>=100?(i.len>=1000?(i.len/1000).toFixed(1).replace('.',',')+' km':Math.round(i.len/10)*10+' m'):'',until(i.end)].filter(Boolean).join(' · ');
     const extra=i.txt.filter(t=>t&&t.toLowerCase()!==i.name.toLowerCase()).join(' · ');
     return `<div style="border-left:4px solid ${col};padding:2px 0 2px 12px;margin:0 0 14px"><div class="hk" style="display:flex;align-items:center;gap:8px"><ha-icon icon="mdi:${i.icon}" style="--mdc-icon-size:22px;color:${col}"></ha-icon>${esc((road?road+' · ':'')+i.name)}</div>`
-      +(where.length?`<div class="ht">${esc(where.join(' → '))}</div>`:'')+(extra?`<div class="ht" style="opacity:.85">${esc(extra)}</div>`:'')+(meta?`<div class="ht" style="opacity:.7;font-size:12px">${esc(meta)}</div>`:'')+`</div>`;}).join('');
-  const t=this._ct2&&this._ct2.t;h+=`<div class="pmut">Umkreis ${T.radius} km · Daten: TomTom${t?' · Stand '+hm(t):''}</div>`;return h;};
+      +(where.length?`<div class="ht">${esc(where.join(' → '))}</div>`:'')+(extra?`<div class="ht" style="opacity:.85">${esc(extra)}</div>`:'')+(meta?`<div class="ht" style="opacity:.7;font-size:12px">${esc(meta)}</div>`:'')
+      +`<div class="ht" style="opacity:.55;font-size:11px;display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span>${esc(['TomTom: '+(i.start?'seit '+dt(i.start):'ohne Beginn'),i.end?'bis '+dt(i.end):'ohne Ende','auf der Wand seit '+dt(i.seenSince)].join(' · '))}</span><button data-a="cthide" data-k="${esc(i.sig)}" style="all:unset;cursor:pointer;border:1px solid rgba(255,255,255,.45);padding:3px 10px;font-size:11px;letter-spacing:.08em;opacity:1">AUSBLENDEN</button></div></div>`;}).join('');
+  const t=this._ct2&&this._ct2.t;const nh=LS('sw-ct-hidden',[]).length;h+=`<div class="pmut">Umkreis ${T.radius} km · Daten: TomTom${t?' · Stand '+hm(t):''}${nh?` · ${nh} ausgeblendet <span data-a="ctunhide" style="cursor:pointer;text-decoration:underline">wieder zeigen</span>`:''}</div>`;return h;};
 C.prototype._ctRefresh=function(){if(this._popKind!=='ctraffic')return;const p=this.shadowRoot&&this.shadowRoot.getElementById('swpop');if(!p||!p.classList.contains('open'))return;const b=p.querySelector('.pbody');const nb=this._ctBody();if(b&&b.__ct!==nb){b.innerHTML=nb;b.__ct=nb;}};
+const ocl=C.prototype._onClick;
+C.prototype._onClick=function(ev){if(!this._suppressClick){const el=ev.composedPath().find(n=>n.dataset&&(n.dataset.a==='cthide'||n.dataset.a==='ctunhide'));
+    if(el){if(el.dataset.a==='cthide'){const h=LS('sw-ct-hidden',[]);if(!h.includes(el.dataset.k))h.push(el.dataset.k);SS('sw-ct-hidden',h);}else SS('sw-ct-hidden',[]);
+      if(this._ct2&&this._ct2.all){const hid=LS('sw-ct-hidden',[]);const T=this._ctCfg();const now=Date.now();this._ct2.items=this._ct2.all.filter(i=>!hid.includes(i.sig)&&!(i.cat===8&&now-i.seenSince>T.acute_days*864e5));}
+      this._ctRefresh();this._render(true);return;}}
+  return ocl.call(this,ev);};
 const oop=C.prototype._openPop;
 C.prototype._openPop=function(kind){if(String(kind)==='ctraffic'&&this._ctCfg()){const p=this.shadowRoot&&this.shadowRoot.getElementById('swpop');if(!p)return;this._popKind='ctraffic';const T=this._ctCfg();const body=this._ctBody();
     p.innerHTML=`<div class="panel" style="width:min(600px,100%)"><div class="pt">${esc(T.title)}</div><div class="pbody" style="max-height:min(72vh,620px)">${body}</div><button class="pclose" data-a="popclose">SCHLIESSEN</button></div>`;const b=p.querySelector('.pbody');if(b)b.__ct=body;p.classList.add('open');return;}
