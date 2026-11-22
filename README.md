@@ -295,6 +295,23 @@ energy:
 
 Der Verlauf kommt aus den Langzeit-Statistiken (5-Minuten-Mittel bzw. Tageswerte); die Sensoren brauchen dafür eine `state_class`.
 
+### Lüftungsempfehlung
+
+Rechnet für jeden Raum aus `climates` (Temperatur/Feuchte) den Taupunkt und vergleicht ihn mit draußen (Taupunkt der Wetter-Entität). Auf der Startseite erscheint eine Blase „Lüften“ (blau) bzw. „Fenster zu“ (orange), das Popup zeigt alle Räume, das Heizungs-Popup eine Zeile „Lüften“.
+
+- **Lüften empfohlen:** Feuchte ≥ `humidity` (Bad: `humidity_bath`) und Taupunkt draußen mindestens `dew_diff` °C niedriger – oder CO₂ ≥ `co2_limit`.
+- **Lüften bringt nichts:** feucht, aber draußen ist die Luft nicht trockener.
+- **Fenster schließen:** Fenster offen und Feuchte < `close_below`, oder bei Außentemperatur < `cold_below` länger als `close_minutes` offen.
+
+```yaml
+ventilation:
+  weather: weather.forchheim_ofr
+  co2:
+    Schlafzimmer: sensor.alpstuga_air_quality_monitor_kohlendioxid
+  # optional (Standardwerte): humidity: 60, humidity_bath: 70, dew_diff: 2, close_below: 50,
+  # close_minutes: 10, cold_below: 10, co2_limit: 1000, bath: [bad, badezimmer]
+```
+
 ### Einklappbare Einstellungen
 
 Auf der Einstellungsseite klappt jeder Abschnitt per Tipp auf die Überschrift auf und zu. Anfangs sind alle
