@@ -343,6 +343,18 @@ city_traffic:
 
 Im Popup lässt sich jede Meldung mit „Ausblenden“ dauerhaft (pro Tablet) ausblenden; „wieder zeigen“ holt alle zurück. Sperrungen, die die Karte länger als `acute_days` Tage durchgehend sieht, gelten als Dauersperrung und werden ausgeblendet.
 
+### Klimaanlage im Bereich Heizbetrieb
+
+Mit `settings.heating.ac_entry` (Config-Entry-ID der Integration, z. B. Midea AC LAN) heißt der Bereich „Heizen & Kühlen“ und bekommt eine Kachel „Klimaanlage“, die die Integration ein- und ausschaltet (wie der Schalter unter Geräte & Dienste). Braucht einen HA-Benutzer mit Administratorrechten.
+
+```yaml
+settings:
+  heating:
+    climates: [...]
+    ac_entry: 01JX35A67CH5G4JJAE1MCMNA4D
+    ac_name: Klimaanlage   # optional
+```
+
 ### Einklappbare Einstellungen
 
 Auf der Einstellungsseite klappt jeder Abschnitt per Tipp auf die Überschrift auf und zu. Anfangs sind alle
