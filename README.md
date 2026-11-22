@@ -264,6 +264,8 @@ compact_lights: false
 - **Heizung** (`climates`): Tipp auf Raumname oder Ist-Temperatur zeigt Ist/Soll mit −/+, Modus und Presets,
   24-h-Verlauf Ist/Soll, Wochenplan (aus `schedule_data`), Feuchte, Fenster und Batterien des Raums.
   `heat_popup: false` schaltet es ab.
+  Wochenplan bearbeiten (Homematic, `homematicip_local.set_schedule_weekday`): Tag antippen, Grundtemperatur und
+  Heizzeiten mit −/+ ändern, speichern für den Tag, Mo–Fr/Sa–So oder alle Tage – mit Rückfrage.
 
 `more_popups: false` schaltet Raumluft-, Server- und Wetter-Popups ab.
 
