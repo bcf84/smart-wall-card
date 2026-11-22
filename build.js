@@ -22,7 +22,7 @@ main = rep(main, "setConfig(c){this._cfg=Object.assign(", "setConfig(c){c=swExpa
 // 4) CSS verdichten
 main = main.replace(/const SW_CSS=`([\s\S]*?)`;/, (_, css) => 'const SW_CSS=`' + csso.minify(css,{restructure:false}).css.replace(/`/g, '\\`') + '`;');
 
-const parts = [src('05-config.js'), main, src('20-popups.js'), src('25-temp.js'), src('30-car.js'), src('40-post.js'), src('45-dwd.js'), src('50-groupdim.js'), src('52-xmas.js'), src('53-setextra.js'), src('55-collapse.js'), src('57-compact.js'), src('58-morepops.js'), src('59-heatpop.js'), src('61-energypop.js'), src('62-vent.js'), src('60-perf.js')];
+const parts = [src('05-config.js'), main, src('20-popups.js'), src('25-temp.js'), src('30-car.js'), src('40-post.js'), src('45-dwd.js'), src('50-groupdim.js'), src('52-xmas.js'), src('53-setextra.js'), src('55-collapse.js'), src('57-compact.js'), src('58-morepops.js'), src('59-heatpop.js'), src('61-energypop.js'), src('62-vent.js'), src('64-citytraffic.js'), src('60-perf.js')];
 let all = parts.join('\n;\n');
 if (TAG !== 'smart-wall-card') all = all.replace(/(['"])smart-wall-card\1/g, `$1${TAG}$1`);
 (async () => {

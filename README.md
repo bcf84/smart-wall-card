@@ -326,6 +326,19 @@ settings_extra:
       - { entity: input_boolean.mesh_alarme, name: Notfunk, confirm_off: "Notfunk ausschalten?" }
 ```
 
+### Verkehrsmeldungen Stadt (TomTom)
+
+Unfälle, Sperrungen, Baustellen, Gefahren und Staus (ab `min_jam`) im Umkreis um `zone.home`, über die TomTom Traffic Incident API (kostenloser Schlüssel von developer.tomtom.com). Blase auf der Startseite nur bei Meldungen, Popup mit Straße, Abschnitt, Verzögerung und Dauer. Autobahnen aus `traffic.roads` werden ausgelassen (die kommen schon von der Autobahn GmbH).
+
+```yaml
+city_traffic:
+  key: DEIN_TOMTOM_KEY
+  radius: 8        # km
+  min_jam: 2       # Staus ab 1 leicht / 2 mittel / 3 stark
+  interval: 300    # Sekunden zwischen Abrufen
+  title: Verkehr Stadt
+```
+
 ### Einklappbare Einstellungen
 
 Auf der Einstellungsseite klappt jeder Abschnitt per Tipp auf die Überschrift auf und zu. Anfangs sind alle
