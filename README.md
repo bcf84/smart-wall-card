@@ -312,6 +312,20 @@ ventilation:
   # close_minutes: 10, cold_below: 10, co2_limit: 1000, bath: [bad, badezimmer]
 ```
 
+### Zusätzliche Einstellungsbereiche (`settings_extra`)
+
+Eigene, einklappbare Bereiche auf der Einstellungsseite. `input_boolean`/`switch` werden zu Schalter-Kacheln, `input_select` zu einer Kachel je Option.
+
+```yaml
+settings_extra:
+  - title: Abwesenheit & Notfunk
+    hint: Optionaler Hinweistext
+    items:
+      - { entity: input_boolean.urlaubsmodus, name: Urlaubsmodus, icon: palm-tree, on: Im Urlaub, off: Zuhause }
+      - { entity: input_select.anwesenheitssimulation, name: Simulation läuft }
+      - { entity: input_boolean.mesh_alarme, name: Notfunk, confirm_off: "Notfunk ausschalten?" }
+```
+
 ### Einklappbare Einstellungen
 
 Auf der Einstellungsseite klappt jeder Abschnitt per Tipp auf die Überschrift auf und zu. Anfangs sind alle
