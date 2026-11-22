@@ -355,6 +355,17 @@ settings:
     ac_name: Klimaanlage   # optional
 ```
 
+### Haustür automatisch öffnen
+
+Kachel rechts neben der Haustür (Seite Sicherheit), die eine Automation „Tür öffnet beim Klingeln“ mit Rückfrage ein- und ausschaltet. Solange sie an ist, zeigt die Startseite eine orange Blase „Haustür · Auto-Öffnen“.
+
+```yaml
+door_auto:
+  automation: automation.auto_tur_offen_klingeln
+  name: Automatisch öffnen   # optional
+  bubble: true               # Blase auf der Startseite
+```
+
 ### Einklappbare Einstellungen
 
 Auf der Einstellungsseite klappt jeder Abschnitt per Tipp auf die Überschrift auf und zu. Anfangs sind alle
