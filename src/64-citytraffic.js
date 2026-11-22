@@ -22,7 +22,7 @@ C.prototype._ctLoad=function(){const T=this._ctCfg();if(!T||T.lat==null)return;c
       .filter(i=>{if(i.roads.length&&i.roads.every(r=>skip.includes(String(r).toUpperCase())))return false;const now=Date.now(),D=864e5;
         if(i.cat===6)return i.mag>=T.min_jam&&i.delay>=T.min_delay*60;
         if(i.cat===1)return true;
-        if(i.cat===8){const st=i.start?new Date(i.start).getTime():NaN,en=i.end?new Date(i.end).getTime():NaN;return (!isNaN(st)&&now-st<=T.acute_days*D)||(!isNaN(en)&&en-now<=T.acute_days*D);}
+        if(i.cat===8){const st=i.start?new Date(i.start).getTime():NaN,en=i.end?new Date(i.end).getTime():NaN;if(!isNaN(en))return en-now<=T.acute_days*D;return !isNaN(st)&&now-st<=T.acute_days*D;}
         return false;})
       .map(i=>Object.assign(i,{score:i.sev*1000+(i.mag===4?3:i.mag)*100+Math.min(99,Math.round(i.delay/60))}))
       .sort((a,b)=>b.score-a.score);
