@@ -328,7 +328,7 @@ settings_extra:
 
 ### Verkehrsmeldungen Stadt (TomTom)
 
-Nur akute Lage im Umkreis um `zone.home`: Staus (ab `min_jam` und `min_delay` Minuten), Unfälle und kurzfristige Sperrungen (Ende innerhalb von `acute_days` Tagen; ohne bekanntes Ende: Beginn innerhalb von `acute_days` Tagen) – Baustellen und Dauersperrungen werden ausgeblendet, über die TomTom Traffic Incident API (kostenloser Schlüssel von developer.tomtom.com). Blase auf der Startseite nur bei Meldungen, Popup mit Straße, Abschnitt, Verzögerung und Dauer. Autobahnen aus `traffic.roads` werden ausgelassen (die kommen schon von der Autobahn GmbH).
+Nur akute Lage im Umkreis um `zone.home`: Staus (ab `min_jam` und `min_delay` Minuten), Unfälle und kurzfristige Sperrungen (Ende innerhalb von `acute_days` Tagen; ohne bekanntes Ende: Beginn innerhalb von `acute_days` Tagen) – Baustellen, Sperrungen wegen Bauarbeiten und Dauersperrungen werden ausgeblendet, über die TomTom Traffic Incident API (kostenloser Schlüssel von developer.tomtom.com). Blase auf der Startseite nur bei Meldungen, Popup mit Straße, Abschnitt, Verzögerung und Dauer. Autobahnen aus `traffic.roads` werden ausgelassen (die kommen schon von der Autobahn GmbH).
 
 ```yaml
 city_traffic:

@@ -22,7 +22,7 @@ C.prototype._ctLoad=function(){const T=this._ctCfg();if(!T||T.lat==null)return;c
       .filter(i=>{if(i.roads.length&&i.roads.every(r=>skip.includes(String(r).toUpperCase())))return false;const now=Date.now(),D=864e5;
         if(i.cat===6)return i.mag>=T.min_jam&&i.delay>=T.min_delay*60;
         if(i.cat===1)return true;
-        if(i.cat===8){const st=i.start?new Date(i.start).getTime():NaN,en=i.end?new Date(i.end).getTime():NaN;if(!isNaN(en))return en-now<=T.acute_days*D;return !isNaN(st)&&now-st<=T.acute_days*D;}
+        if(i.cat===8){if(i.txt.some(t=>/bau|baustelle|bauarbeit|sanierung|erneuerung/i.test(t)))return false;const st=i.start?new Date(i.start).getTime():NaN,en=i.end?new Date(i.end).getTime():NaN;if(!isNaN(en))return en-now<=T.acute_days*D;return !isNaN(st)&&now-st<=T.acute_days*D;}
         return false;})
       .map(i=>Object.assign(i,{score:i.sev*1000+(i.mag===4?3:i.mag)*100+Math.min(99,Math.round(i.delay/60))}))
       .sort((a,b)=>b.score-a.score);
@@ -33,8 +33,10 @@ C.prototype._ctItems=function(){return (this._ct2&&this._ct2.items)||[];};
 const ohb=C.prototype._homeBubbles;
 C.prototype._homeBubbles=function(){let out=ohb.call(this);const T=this._ctCfg();if(!T)return out;try{this._ctLoad();}catch(e){}const L=this._ctItems();
   if(!L.length&&!this._cfg.alerts_test)return out;const hard=L.some(i=>i.cat===8||i.cat===1||i.mag>=3);
-  const top=L[0];const short=i=>i.cat===8?'gesperrt':i.cat===1?'Unfall':(i.delay>=60?'+'+Math.round(i.delay/60)+' min':'Stau');const txt=top?((top.roads[0]||top.from||'').split(/[,/]/)[0].trim()+' '+short(top)).trim():'FREI';
-  return out+this._bub(L.length,L.length===1?'MELDUNG':'MELDUNGEN',{cap:T.title,txt:txt.toUpperCase()},L.length?(hard?'#F44336':'#FF9800'):null,'pop:ctraffic');};
+  const top=L[0];const kind=i=>i.cat===8?'GESPERRT':i.cat===1?'UNFALL':'STAU';const where=i=>(i.roads[0]||i.from||'').split(/[,/(]/)[0].trim();
+  const unit=!top?'MELDUNGEN':(L.length===1?kind(top):'MELDUNGEN');let sub=top?(L.length===1?(where(top)+(top.cat===6&&top.delay>=60?' +'+Math.round(top.delay/60)+' MIN':'')):where(top)+' '+kind(top)):'FREI';
+  sub=sub.trim();if(sub.length>16)sub=sub.slice(0,15).trim()+'…';
+  return out+this._bub(L.length,unit,{cap:T.title,txt:sub.toUpperCase()},L.length?(hard?'#F44336':'#FF9800'):null,'pop:ctraffic');};
 /* Popup */
 C.prototype._ctBody=function(){const T=this._ctCfg();const L=this._ctItems();
   if(!L.length)return `<div class="muted">${this._ct2&&this._ct2.err?'Meldungen konnten nicht geladen werden ('+esc(this._ct2.err)+').':'Derzeit keine akuten Staus oder Sperrungen im Umkreis von '+(T?T.radius:8)+' km.'}</div>`;
