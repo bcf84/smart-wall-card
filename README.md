@@ -269,6 +269,32 @@ compact_lights: false
 
 `more_popups: false` schaltet Raumluft-, Server- und Wetter-Popups ab.
 
+### Energie-Popup
+
+Ein Tipp auf die Energie-Sektion im Home-Screen öffnet ein Popup mit Energiefluss (Solar, Akku, Haus, Netz), dem heutigen Tag samt Autarkie-Ring, Verlauf 24 h / 7 Tage, Akku-Details mit Restzeit und einer Gesamtbilanz. Unten führt ein Button zum HA-Energie-Dashboard (`energy.path`). Abschalten: `energy_popup: false`.
+
+```yaml
+energy:
+  # … bisherige Schlüssel (solar, house, grid, battery, today_*) …
+  popup:
+    inverter: sensor.system_solarbalkon_sb_einspeiseleistung   # Leistung Wechselrichter → Haus (optional)
+    share_solar: sensor.system_solarbalkon_tagesanteil_solar    # teilt den Eigenanteil in Solar/Akku (optional)
+    share_battery: sensor.system_solarbalkon_tagesanteil_akku
+    batteries:
+      - name: Speicher A
+        soc: sensor.solarbank_e1600_ladestand
+        state: sensor.solarbank_e1600_betriebszustand
+        temp: sensor.solarbank_e1600_a_temperatur
+        charge: sensor.solarbank_e1600_aufladeleistung
+        discharge: sensor.solarbank_e1600_entladeleistung
+        energy: sensor.solarbank_e1600_akkuenergie          # Wh, für die Restzeit
+        output_limit: sensor.solarbank_e1600_einspeisevorgabe
+    totals:
+      - { e: sensor.system_solarbalkon_ertrag_gesamt, l: Solarertrag, icon: solar-power-variant }
+```
+
+Der Verlauf kommt aus den Langzeit-Statistiken (5-Minuten-Mittel bzw. Tageswerte); die Sensoren brauchen dafür eine `state_class`.
+
 ### Einklappbare Einstellungen
 
 Auf der Einstellungsseite klappt jeder Abschnitt per Tipp auf die Überschrift auf und zu. Anfangs sind alle
