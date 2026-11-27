@@ -3,7 +3,7 @@
 const SW_BG_IMGS={'h1':'/local/backgrounds/h1.jpg','h2':'/local/backgrounds/h2.avif','h3':'/local/backgrounds/h3.avif','h4':'/local/backgrounds/h4.jpeg','h5':'/local/backgrounds/h5.jpg','h6':'/local/backgrounds/h6.jpg','h7':'/local/backgrounds/h7.jpg','h8':'/local/backgrounds/h8.jpg','Frühling':'saison:fruehling','Sommer':'saison:sommer','Herbst':'saison:herbst','Winter':'saison:winter','Ostern':'saison:ostern','Halloween':'saison:halloween','Weihnachten':'saison:weihnachten','h9':'multi:/local/backgrounds/h9'};
 /* Gleiche Logik wie button_card_template "hintergrund_ebene" im Dashboard "slick" */
 function swBg(states,cfg){const s=states[cfg.background_entity];const bilder=cfg.background_images||SW_BG_IMGS;const raum=cfg.room_image||'';
-  const manuell=s&&bilder[s.state];const auto=s&&s.state==='Automatik';
+  const SI=n=>{const u=cfg.season_images&&cfg.season_images[n];return u?`url('${u}'), `:'';};const manuell=s&&bilder[s.state];const auto=s&&s.state==='Automatik';
   const m=new Date().getMonth()+1;const jz=(m>=3&&m<=5)?'fruehling':(m>=6&&m<=8)?'sommer':(m>=9&&m<=11)?'herbst':'winter';
   const heute=new Date();heute.setHours(12,0,0,0);const J=heute.getFullYear();const tag=864e5;
   const ostern=(y=>{const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m2=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m2+114)/31),da=((h+l-7*m2+114)%31)+1;return new Date(y,mo-1,da,12);})(J);
@@ -13,10 +13,10 @@ function swBg(states,cfg){const s=states[cfg.background_entity];const bilder=cfg
   else if(heute.getMonth()===9&&heute.getDate()>=25)fest='halloween';
   else if(heute>=advent1||(heute.getMonth()===0&&heute.getDate()<=6))fest='weihnachten';
   let bild;
-  if(manuell&&manuell.indexOf('saison:')===0){const f=manuell.slice(7);bild=`url('/local/backgrounds/${f}.avif'), url('/local/${f}.avif')`;}
+  if(manuell&&manuell.indexOf('saison:')===0){const f=manuell.slice(7);bild=SI(f)+`url('/local/backgrounds/${f}.avif'), url('/local/${f}.avif')`;}
   else if(manuell&&manuell.indexOf('multi:')===0){const p=manuell.slice(6);bild=['avif','jpg','jpeg','png','webp'].map(x=>`url('${p}.${x}')`).join(', ');}
   else if(manuell)bild=`url('${manuell}')`;
-  else if(auto)bild=(fest?`url('/local/backgrounds/${fest}.avif'), url('/local/${fest}.avif'), `:'')+`url('/local/backgrounds/${jz}.avif'), url('/local/${jz}.avif'), url('${raum}')`;
+  else if(auto)bild=(fest?SI(fest)+`url('/local/backgrounds/${fest}.avif'), url('/local/${fest}.avif'), `:'')+SI(jz)+`url('/local/backgrounds/${jz}.avif'), url('/local/${jz}.avif'), url('${raum}')`;
   else bild=`url('${raum}')`;
   let h=`<div class="bgl" style="background-image:${bild};background-size:cover;background-position:center;background-repeat:no-repeat"></div>`;
   if(!auto)return h;
