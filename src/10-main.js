@@ -631,12 +631,12 @@ class SmartWallCard extends HTMLElement{
       (r.on||[]).forEach(id=>{if(S(id)==='on'&&old(id))P(nm(id),id);});
       (r.off||[]).forEach(id=>{if(S(id)==='off')P(nm(id)+': aus',id);});
       if(r.e){const v=S(r.e);const ok=v!==undefined&&!['unavailable','unknown'].includes(v);
-        if(ok&&r.states&&r.states.includes(v))P(nm(r.e)+': '+this._fmtState(r.e),r.e);
-        if(ok&&r.not_states&&!r.not_states.includes(v))P(nm(r.e)+': '+this._fmtState(r.e),r.e);
-        const n=parseFloat(v);if(ok&&!isNaN(n)&&((r.above!=null&&n>r.above)||(r.below!=null&&n<r.below)))P(nm(r.e)+': '+this._fmtState(r.e),r.e);}
+        if(ok&&r.states&&r.states.includes(v))P(nm(r.e)+': '+this._fmtState(r.e,r.texts),r.e);
+        if(ok&&r.not_states&&!r.not_states.includes(v))P(nm(r.e)+': '+this._fmtState(r.e,r.texts),r.e);
+        const n=parseFloat(v);if(ok&&!isNaN(n)&&((r.above!=null&&n>r.above)||(r.below!=null&&n<r.below)))P(nm(r.e)+': '+this._fmtState(r.e,r.texts),r.e);}
       if(r.battery){const b=this._lowBatteries(r.battery).filter(x=>(!r.battery_only||r.battery_only.includes(x.kind))&&!(r.battery_skip||[]).includes(x.kind));if(b.length)P('Batterie schwach: '+b.slice(0,4).map(x=>x.n).join(', ')+(b.length>4?' …':''),b.map(x=>x.id),true);}});
       if(why.length)out[pg]=why;}return out;}
-  _fmtState(id){const x=this._st(id);if(!x)return '';const raw=x.state;let t=raw;try{if(this._hass&&this._hass.formatEntityState)t=this._hass.formatEntityState(x);}catch(e){}
+  _fmtState(id,tx){const x=this._st(id);if(!x)return '';const raw=x.state;if(tx&&tx[raw]!=null)return String(tx[raw]);let t=raw;try{if(this._hass&&this._hass.formatEntityState)t=this._hass.formatEntityState(x);}catch(e){}
     if(t===raw||/^[a-z0-9_]+$/.test(t)){const D={nearly_empty:'fast leer',critically_empty:'fast ganz leer',empty:'leer',not_inserted:'nicht eingesetzt',full:'voll',ok:'in Ordnung',present:'vorhanden',off:'aus',on:'an',open:'offen',closed:'geschlossen',low:'niedrig',high:'hoch',error:'Fehler',offline:'offline',online:'online',idle:'bereit',running:'läuft',paused:'pausiert',finished:'fertig',standby:'Standby',inactive:'inaktiv',ready:'bereit',delayed_start:'Startzeit gesetzt',action_required:'Eingriff nötig',water_tank_nearly_empty:'Wassertank fast leer',water_tank_empty:'Wassertank leer',drip_tray_full:'Tropfschale voll',bean_container_empty:'Bohnenbehälter leer',pomace_cave_full:'Tresterbehälter voll'};
       t=D[raw]||String(raw).replace(/_/g,' ').replace(/^./,c=>c.toUpperCase());}
     if(x.attributes&&x.attributes.unit_of_measurement&&!isNaN(parseFloat(raw))&&t===raw)t=raw+' '+x.attributes.unit_of_measurement;return t;}
